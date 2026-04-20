@@ -731,10 +731,14 @@ select option{background:#1a1c1f;color:#e8e9ea}
       <span>Вес тела</span>
       <button class="btn btn-g" style="padding:4px 12px;font-size:12px" onclick="openWeightModal()">+ Записать</button>
     </div>
-    <div class="g4" style="margin-bottom:8px">
+    <div class="g4" style="margin-bottom:6px">
       <div class="kpi cz" style="grid-column:span 2"><div class="kpi-lbl">Текущий вес</div><div class="kpi-val" id="wt-current" style="color:var(--green)">—</div><div class="kpi-sub">кг</div></div>
-      <div class="kpi"><div class="kpi-lbl">За 30 дней</div><div class="kpi-val" id="wt-delta" style="font-size:16px">—</div><div class="kpi-sub">кг</div></div>
-      <div class="kpi"><div class="kpi-lbl">BMI</div><div class="kpi-val" id="wt-bmi" style="font-size:16px">—</div><div class="kpi-sub" id="wt-bmi-lbl"></div></div>
+      <div class="kpi" style="grid-column:span 2"><div class="kpi-lbl">% жира</div><div class="kpi-val" id="wt-fat" style="color:var(--amber)">—</div><div class="kpi-sub">%</div></div>
+    </div>
+    <div class="g4" style="margin-bottom:8px">
+      <div class="kpi"><div class="kpi-lbl">Вес за 30 дн.</div><div class="kpi-val" id="wt-delta" style="font-size:16px">—</div><div class="kpi-sub">кг</div></div>
+      <div class="kpi"><div class="kpi-lbl">Жир за 30 дн.</div><div class="kpi-val" id="wt-fat-delta" style="font-size:16px">—</div><div class="kpi-sub">%</div></div>
+      <div class="kpi" style="grid-column:span 2"><div class="kpi-lbl">BMI</div><div class="kpi-val" id="wt-bmi" style="font-size:16px">—</div><div class="kpi-sub" id="wt-bmi-lbl"></div></div>
     </div>
     <div class="fg" style="margin-bottom:8px">
       <label>Рост, см (для BMI)</label>
@@ -1021,7 +1025,10 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div class="modal-hdr"><span class="modal-title">Записать вес</span><button class="modal-close" onclick="closeModal('modal-weight')">✕</button></div>
     <div class="fg2">
       <div><label>Вес, кг</label><input type="number" id="wt-val" placeholder="75.5" min="30" max="300" step="0.1"></div>
-      <div><label>Дата</label><input type="date" id="wt-date"></div>
+      <div><label>% жира (необяз.)</label><input type="number" id="wt-fat-val" placeholder="15.0" min="3" max="60" step="0.1"></div>
+    </div>
+    <div class="fg">
+      <label>Дата</label><input type="date" id="wt-date">
     </div>
     <div class="fg"><label>Заметка (необяз.)</label><input type="text" id="wt-note" placeholder="Утром натощак..."></div>
     <button class="btn btn-g" style="width:100%" onclick="saveWeightEntry()">Сохранить</button>
@@ -2564,6 +2571,7 @@ function saveHeightPref(){
 
 function openWeightModal(){
   document.getElementById('wt-val').value='';
+  document.getElementById('wt-fat-val').value='';
   document.getElementById('wt-date').value=isoToday();
   document.getElementById('wt-note').value='';
   document.getElementById('modal-weight').classList.add('open');
@@ -2572,10 +2580,11 @@ function openWeightModal(){
 function saveWeightEntry(){
   const val=parseFloat(document.getElementById('wt-val').value);
   if(!val||val<30||val>300){showToast('Введи корректный вес');return;}
+  const fat=parseFloat(document.getElementById('wt-fat-val').value)||null;
   const date=document.getElementById('wt-date').value||isoToday();
   const note=document.getElementById('wt-note').value.trim();
   weightEntries=weightEntries.filter(e=>e.date!==date);
-  weightEntries.push({id:Date.now().toString(36),date,val,note});
+  weightEntries.push({id:Date.now().toString(36),date,val,fat,note});
   weightEntries.sort((a,b)=>a.date.localeCompare(b.date));
   saveWeightSt();
   closeModal('modal-weight');
@@ -2599,20 +2608,35 @@ function renderWeightSection(){
   if(hInput&&savedH&&!hInput.value) hInput.value=savedH;
   const h=parseFloat(savedH||hInput?.value);
 
-  // Current weight
+  // Current weight + fat
   const curEl=document.getElementById('wt-current');
   if(curEl) curEl.textContent=last?last.val.toFixed(1):'—';
+  const fatEl=document.getElementById('wt-fat');
+  if(fatEl){
+    const lastWithFat=[...sorted].reverse().find(e=>e.fat!=null);
+    fatEl.textContent=lastWithFat?lastWithFat.fat.toFixed(1):'—';
+  }
 
-  // Delta 30d
+  // Deltas 30d
+  const cutoff=isoDate(new Date(Date.now()-30*86400000));
+  const base=sorted.find(e=>e.date>=cutoff);
   const d30El=document.getElementById('wt-delta');
   if(d30El){
-    const cutoff=isoDate(new Date(Date.now()-30*86400000));
-    const base=sorted.find(e=>e.date>=cutoff);
     if(last&&base&&last!==base){
       const d=(last.val-base.val).toFixed(1);
       d30El.textContent=(d>0?'+':'')+d;
       d30El.style.color=d>0?'var(--red)':'var(--green)';
     } else { d30El.textContent='—'; d30El.style.color='var(--text)'; }
+  }
+  const fatDeltaEl=document.getElementById('wt-fat-delta');
+  if(fatDeltaEl){
+    const lastF=[...sorted].reverse().find(e=>e.fat!=null);
+    const baseF=[...sorted].find(e=>e.date>=cutoff&&e.fat!=null);
+    if(lastF&&baseF&&lastF!==baseF){
+      const d=(lastF.fat-baseF.fat).toFixed(1);
+      fatDeltaEl.textContent=(d>0?'+':'')+d;
+      fatDeltaEl.style.color=d>0?'var(--red)':'var(--green)';
+    } else { fatDeltaEl.textContent='—'; fatDeltaEl.style.color='var(--text)'; }
   }
 
   // BMI
@@ -2637,6 +2661,7 @@ function renderWeightSection(){
       <span class="sr-k" style="font-size:12px">${fmtLabel(e.date)}${e.note?` · <em style="color:var(--text3)">${e.note}</em>`:''}</span>
       <span class="sr-v" style="display:flex;align-items:center;gap:8px">
         <span style="color:var(--green)">${e.val} кг</span>
+        ${e.fat!=null?`<span style="color:var(--amber)">${e.fat}%</span>`:''}
         <button class="btn-del" onclick="deleteWeightEntry('${e.id}')">✕</button>
       </span>
     </div>`).join('');
