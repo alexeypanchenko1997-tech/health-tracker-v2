@@ -2127,7 +2127,8 @@ function exportAll(){
     exportedAt:new Date().toISOString(),
     foodEntries,goals,savedFoods,dayNotes,
     waterEntries,waterNorm,
-    weightEntries,bodyEntries
+    weightEntries,bodyEntries,
+    wtHeight: localStorage.getItem('wt_height')||null
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -2167,6 +2168,10 @@ function handleImport(event){
         bodyEntries=[...bodyEntries,...d.bodyEntries.filter(e=>!existingB.has(e.id))];
         bodyEntries.sort((a,b)=>a.date.localeCompare(b.date));
         saveBodySt();
+      }
+      // Рост (для BMI) — переносим только если у нас его ещё нет
+      if(d.wtHeight && !localStorage.getItem('wt_height')){
+        localStorage.setItem('wt_height', d.wtHeight);
       }
       saveFoodEntries();saveGoalsSt();saveFoods();saveNotes();saveWaterEntries();saveWaterNormSt();
       renderToday();showToast('Импортировано ✓');
