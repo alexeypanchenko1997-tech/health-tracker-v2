@@ -601,10 +601,10 @@ select option{background:#1a1c1f;color:#e8e9ea}
   <div class="card" style="margin-bottom:10px">
     <div class="card-title">Скопировать из вчера</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-      <button class="btn" style="font-size:12px" onclick="copyMealFromYesterday('breakfast')">🥣 Завтрак</button>
-      <button class="btn" style="font-size:12px" onclick="copyMealFromYesterday('lunch')">🍽️ Обед</button>
-      <button class="btn" style="font-size:12px" onclick="copyMealFromYesterday('dinner')">🥘 Ужин</button>
-      <button class="btn" style="font-size:12px" onclick="copyMealFromYesterday('snack')">🍎 Перекус</button>
+      <button class="btn" style="font-size:12px;display:inline-flex;align-items:center;gap:5px;justify-content:center" onclick="copyMealFromYesterday('breakfast')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M7 21h10"/><path d="M19.5 12 22 6"/><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62"/></svg>Завтрак</button>
+      <button class="btn" style="font-size:12px;display:inline-flex;align-items:center;gap:5px;justify-content:center" onclick="copyMealFromYesterday('lunch')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>Обед</button>
+      <button class="btn" style="font-size:12px;display:inline-flex;align-items:center;gap:5px;justify-content:center" onclick="copyMealFromYesterday('dinner')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 16-4"/><path d="m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8"/></svg>Ужин</button>
+      <button class="btn" style="font-size:12px;display:inline-flex;align-items:center;gap:5px;justify-content:center" onclick="copyMealFromYesterday('snack')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 11.5c0 4.5-3.5 9.5-7 9.5S5 16 5 11.5 8.5 7 12 7s7 0 7 4.5Z"/><path d="M12 7V3"/><path d="M12 3c1.5-1 3-1 4 0"/></svg>Перекус</button>
     </div>
   </div>
 </div>
@@ -624,7 +624,7 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div class="card-title">Норма</div>
     <div class="g2">
       <div class="fg"><label>Дневная норма (мл)</label><input type="number" id="water-norm-input" value="2000" min="500" max="6000" step="50" oninput="saveWaterNorm()"></div>
-      <div class="kpi cw" style="margin-top:19px"><div class="kpi-lbl">Streak 💧</div><div class="kpi-val" id="wstreak-big" style="color:var(--cyan)">0</div><div class="kpi-sub">дней подряд</div></div>
+      <div class="kpi cw" style="margin-top:19px"><div class="kpi-lbl" style="display:flex;align-items:center;justify-content:center;gap:4px">Streak <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/></svg></div><div class="kpi-val" id="wstreak-big" style="color:var(--cyan)">0</div><div class="kpi-sub">дней подряд</div></div>
     </div>
   </div>
 
@@ -637,12 +637,12 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">
       <div><label>Напиток</label>
         <select id="w-type" onchange="onWTypeChange()">
-          <option value="water|1.0">💧 Вода</option>
-          <option value="tea|0.8">🍵 Чай</option>
-          <option value="energy|0.5">⚡ Энергетик</option>
-          <option value="protein|0.75">🥛 Протеин (молоко)</option>
-          <option value="proteinwater|0.9">🥤 Протеин (вода)</option>
-          <option value="other|0.8">🫗 Другое</option>
+          <option value="water|1.0">Вода</option>
+          <option value="tea|0.8">Чай</option>
+          <option value="energy|0.5">Энергетик</option>
+          <option value="protein|0.75">Протеин (молоко)</option>
+          <option value="proteinwater|0.9">Протеин (вода)</option>
+          <option value="other|0.8">Другое</option>
         </select>
       </div>
       <div><label>Объём (мл)</label><input type="number" id="w-vol" value="250" min="10" max="3000" step="10"></div>
@@ -749,7 +749,7 @@ select option{background:#1a1c1f;color:#e8e9ea}
     </div>
     <div id="wt-targets-info" style="margin-bottom:8px"></div>
     <div class="wt-chart-wrap" id="wt-chart-wrap"><canvas id="wt-chart"></canvas></div>
-    <button class="btn btn-sm" id="wt-toggle-list" onclick="toggleList('wt')" style="margin-top:8px;width:100%">История ▾</button>
+    <button class="btn btn-sm" id="wt-toggle-list" onclick="toggleList('wt')" style="margin-top:8px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:6px">История <svg class="tgl-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg></button>
     <div id="wt-entries-list" style="display:none;margin-top:8px"></div>
   </div>
 
@@ -778,7 +778,7 @@ select option{background:#1a1c1f;color:#e8e9ea}
       <button class="tab" onclick="setBodyMetric('forearm',this)">Предплечье</button>
     </div>
     <div class="wt-chart-wrap" id="bd-chart-wrap"><canvas id="bd-chart"></canvas></div>
-    <button class="btn btn-sm" id="bd-toggle-list" onclick="toggleList('bd')" style="margin-top:8px;width:100%">История ▾</button>
+    <button class="btn btn-sm" id="bd-toggle-list" onclick="toggleList('bd')" style="margin-top:8px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:6px">История <svg class="tgl-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg></button>
     <div id="bd-entries-list" style="display:none;margin-top:8px"></div>
   </div>
 
@@ -833,7 +833,7 @@ select option{background:#1a1c1f;color:#e8e9ea}
   <div class="card collapsible" id="card-saved-foods">
     <div class="card-title" onclick="document.getElementById('card-saved-foods').classList.toggle('open')">
       <span>Мои продукты (<span id="sf-count">0</span>) · Встроенная база: 185</span>
-      <span class="chev">▾</span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="collapse-body">
       <div style="font-size:11px;color:var(--text3);margin-bottom:8px">В поиске работают оба источника. Звёздочка ★ — твои сохранённые.</div>
@@ -852,9 +852,9 @@ select option{background:#1a1c1f;color:#e8e9ea}
   <div class="card">
     <div class="card-title">Напоминания о питании</div>
     <div class="fg4" style="margin-bottom:8px">
-      <div><label>🥣 Завтрак</label><input type="time" id="notif-breakfast" value="09:00" onchange="saveReminderSettings()"></div>
-      <div><label>🍽️ Обед</label><input type="time" id="notif-lunch" value="14:00" onchange="saveReminderSettings()"></div>
-      <div><label>🥘 Ужин</label><input type="time" id="notif-dinner" value="20:00" onchange="saveReminderSettings()"></div>
+      <div><label style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M7 21h10"/></svg>Завтрак</label><input type="time" id="notif-breakfast" value="09:00" onchange="saveReminderSettings()"></div>
+      <div><label style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>Обед</label><input type="time" id="notif-lunch" value="14:00" onchange="saveReminderSettings()"></div>
+      <div><label style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 16-4"/></svg>Ужин</label><input type="time" id="notif-dinner" value="20:00" onchange="saveReminderSettings()"></div>
       <div><label>Вкл/Выкл</label>
         <label class="toggle" style="margin-top:6px"><input type="checkbox" id="food-notif-toggle" onchange="toggleFoodNotif()"><span class="toggle-sl"></span></label>
       </div>
@@ -881,8 +881,8 @@ select option{background:#1a1c1f;color:#e8e9ea}
   <div class="card">
     <div class="card-title">Данные</div>
     <div class="btn-row">
-      <button class="btn" onclick="exportAll()">📤 Экспорт</button>
-      <button class="btn" onclick="triggerImport()">📥 Импорт</button>
+      <button class="btn" onclick="exportAll()" style="display:inline-flex;align-items:center;gap:6px;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>Экспорт</button>
+      <button class="btn" onclick="triggerImport()" style="display:inline-flex;align-items:center;gap:6px;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Импорт</button>
     </div>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
     <div style="font-size:11px;color:var(--text3);margin-top:8px">Все данные (КБЖУ + вода) в одном файле. При импорте старые данные объединяются с новыми.</div>
@@ -986,10 +986,10 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div class="modal-hdr"><span class="modal-title" id="modal-food-title">Добавить</span><button class="modal-close" onclick="closeModal('modal-food')">✕</button></div>
     <div class="fg"><label>Категория</label>
       <select id="add-meal-type">
-        <option value="breakfast">🥣 Завтрак</option>
-        <option value="lunch">🍽️ Обед</option>
-        <option value="dinner">🥘 Ужин</option>
-        <option value="snack">🍎 Перекус</option>
+        <option value="breakfast">Завтрак</option>
+        <option value="lunch">Обед</option>
+        <option value="dinner">Ужин</option>
+        <option value="snack">Перекус</option>
       </select>
     </div>
     <!-- saved search -->
@@ -1088,13 +1088,37 @@ select option{background:#1a1c1f;color:#e8e9ea}
 // ══════════════════════════════════════════════════════
 // CONSTANTS
 // ══════════════════════════════════════════════════════
+// ── SVG-ИКОНКИ (Lucide-style, 24x24 viewBox) ──────────
+const ICONS = {
+  // Напитки
+  droplet: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/>',
+  coffee:  '<path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/>',
+  zap:     '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  milk:    '<path d="M8 2h8"/><path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2"/>',
+  cupSoda: '<path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8"/><path d="M5 8h14"/><path d="M7 15a6.65 6.65 0 0 1 5 0 6.65 6.65 0 0 0 5 0"/><path d="m12 8 1-6h2"/>',
+  glassWater: '<path d="M15.2 22H8.8a2 2 0 0 1-2-1.79L5 3h14l-1.81 17.21A2 2 0 0 1 15.2 22Z"/><path d="M6 12a5 5 0 0 1 6 0 5 5 0 0 0 6 0"/>',
+  // Приёмы пищи
+  bowl:    '<path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M7 21h10"/><path d="M19.5 12 22 6"/><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62"/><path d="M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62"/>',
+  utensils:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  pot:     '<path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 16-4"/><path d="m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8"/>',
+  apple:   '<path d="M19 11.5c0 4.5-3.5 9.5-7 9.5S5 16 5 11.5 8.5 7 12 7s7 0 7 4.5Z"/><path d="M12 7V3"/><path d="M12 3c1.5-1 3-1 4 0"/>',
+  // UI
+  upload:  '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  chevronDown:'<polyline points="6 9 12 15 18 9"/>'
+};
+function icon(name, size=14, color='currentColor'){
+  const ic=ICONS[name]; if(!ic) return '';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0">${ic}</svg>`;
+}
+
 const DRINKS = {
-  water:{label:'Вода',coef:1.0,badge:'bw',icon:'💧',color:'#4a9eff'},
-  tea:{label:'Чай',coef:0.8,badge:'bt',icon:'🍵',color:'#5cb85c'},
-  energy:{label:'Энергетик',coef:0.5,badge:'be',icon:'⚡',color:'#d4a017'},
-  protein:{label:'Протеин/молоко',coef:0.75,badge:'bp',icon:'🥛',color:'#a78bfa'},
-  proteinwater:{label:'Протеин/вода',coef:0.9,badge:'bw',icon:'🥤',color:'#60c4ff'},
-  other:{label:'Другой',coef:0.8,badge:'bo',icon:'🫗',color:'#c472c4'}
+  water:        {label:'Вода',            coef:1.0,  badge:'bw', iconKey:'droplet',    color:'#4a9eff'},
+  tea:          {label:'Чай',             coef:0.8,  badge:'bt', iconKey:'coffee',     color:'#5cb85c'},
+  energy:       {label:'Энергетик',       coef:0.5,  badge:'be', iconKey:'zap',        color:'#d4a017'},
+  protein:      {label:'Протеин/молоко',  coef:0.75, badge:'bp', iconKey:'milk',       color:'#a78bfa'},
+  proteinwater: {label:'Протеин/вода',    coef:0.9,  badge:'bw', iconKey:'cupSoda',    color:'#60c4ff'},
+  other:        {label:'Другой',          coef:0.8,  badge:'bo', iconKey:'glassWater', color:'#c472c4'}
 };
 const QUICK_WATER = [
   {type:'water',vol:200,label:'Стакан',sub:'200 мл'},
@@ -1104,10 +1128,10 @@ const QUICK_WATER = [
   {type:'protein',vol:300,label:'Протеин',sub:'молоко'},
 ];
 const MEAL_META = {
-  breakfast:{icon:'🥣',label:'Завтрак'},
-  lunch:{icon:'🍽️',label:'Обед'},
-  dinner:{icon:'🥘',label:'Ужин'},
-  snack:{icon:'🍎',label:'Перекус'},
+  breakfast:{iconKey:'bowl',     label:'Завтрак'},
+  lunch:    {iconKey:'utensils', label:'Обед'},
+  dinner:   {iconKey:'pot',      label:'Ужин'},
+  snack:    {iconKey:'apple',    label:'Перекус'},
 };
 const MEAL_ORDER = ['breakfast','lunch','dinner','snack'];
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -1438,7 +1462,7 @@ function renderToday(){
   // Quick water
   document.getElementById('today-quick-btns').innerHTML = QUICK_WATER.map(q=>{
     const d=DRINKS[q.type];
-    return`<button class="qbtn" onclick="quickAddWater('${q.type}',${q.vol})"><span style="font-size:14px">${d.icon}</span><span><span style="font-weight:500">${q.label}</span><br><span class="qbtn-sub">${q.sub}</span></span></button>`;
+    return`<button class="qbtn" onclick="quickAddWater('${q.type}',${q.vol})"><span style="display:inline-flex;color:${d.color}">${icon(d.iconKey,18)}</span><span><span style="font-weight:500">${q.label}</span><br><span class="qbtn-sub">${q.sub}</span></span></button>`;
   }).join('');
   // Streaks
   // TDEE summary
@@ -1484,7 +1508,7 @@ function waterTip(hydro,pct,left){
   if(pct<40) return`<b>Не хватает ${left.toLocaleString('ru-RU')} мл</b> до нормы.`;
   if(pct<70) return`Осталось добрать <b>${left.toLocaleString('ru-RU')} мл</b>.`;
   if(pct<100) return`Почти норма! Ещё <b>${left.toLocaleString('ru-RU')} мл</b>.`;
-  return'<b>Норма выполнена!</b> 🎯';
+  return'<b>Норма выполнена!</b> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
 }
 
 function saveNote(){
@@ -1522,13 +1546,13 @@ function renderFood(){
     div.innerHTML=`
       <div class="meal-head" onclick="toggleMealBlock(this)">
         <div class="meal-head-l">
-          <span class="meal-icon">${info.icon}</span>
+          <span class="meal-icon" style="display:inline-flex;color:var(--text2)">${icon(info.iconKey,18)}</span>
           <span class="meal-name-t">${info.label}</span>
           ${me.length?`<span class="meal-kcal-t">${Math.round(mt2.k)} ккал</span>`:''}
         </div>
         <div style="display:flex;align-items:center;gap:6px">
           ${me.length?`<span class="meal-macro-t">Б${Math.round(mt2.b)} Ж${Math.round(mt2.z)} У${Math.round(mt2.u)}</span>`:''}
-          <span class="meal-arr ${open?'open':''}">▾</span>
+          <span class="meal-arr ${open?'open':''}" style="display:inline-flex">${icon('chevronDown',14)}</span>
         </div>
       </div>
       <div class="meal-items ${open?'open':''}">
@@ -1789,7 +1813,7 @@ function renderWater(){
   document.getElementById('wdate-lbl').textContent=fmtLabel(currentDate);
   document.getElementById('water-quick-btns').innerHTML=QUICK_WATER.map(q=>{
     const d=DRINKS[q.type];
-    return`<button class="qbtn" onclick="quickAddWater('${q.type}',${q.vol})"><span style="font-size:14px">${d.icon}</span><span><span style="font-weight:500">${q.label}</span><br><span class="qbtn-sub">${q.sub}</span></span></button>`;
+    return`<button class="qbtn" onclick="quickAddWater('${q.type}',${q.vol})"><span style="display:inline-flex;color:${d.color}">${icon(d.iconKey,18)}</span><span><span style="font-weight:500">${q.label}</span><br><span class="qbtn-sub">${q.sub}</span></span></button>`;
   }).join('');
 }
 
@@ -1830,7 +1854,7 @@ function autoAddProteinToFood(type, vol){
     fromWater:true
   });
   saveFoodEntries();
-  showToast('🥛 Протеин добавлен в питание (перекус)');
+  showToast('Протеин добавлен в питание (перекус)');
 }
 
 function addWaterEntry(){
@@ -1937,7 +1961,7 @@ function startNotifTimer(){
     const key=todayHydKey();
     const hydro=Math.round(waterEntries.filter(e=>e.date===key).reduce((s,e)=>s+e.vol*e.coef,0));
     const left=Math.max(waterNorm-hydro,0);
-    if(left>0) new Notification('💧 Время выпить воды',{body:`Осталось ${left} мл до нормы`});
+    if(left>0) new Notification('Время выпить воды',{body:`Осталось ${left} мл до нормы`});
   },h*3600*1000);
 }
 function saveNotifSettings(){
@@ -2008,7 +2032,7 @@ function histSelectDay(ds){
   let mealsHtml=MEAL_ORDER.map(mt=>{
     const me=fe.filter(e=>e.meal===mt);if(!me.length) return'';
     const info=MEAL_META[mt];
-    return`<div style="margin-bottom:8px"><div style="font-size:12px;color:var(--text2);margin-bottom:3px">${info.icon} ${info.label}</div>${me.map(e=>`<div class="sr"><span class="sr-k">${e.name}${e.weight?' ('+e.weight+'г)':''}</span><span class="sr-v" style="font-size:11px;color:var(--text3)">${Math.round(e.k)} / Б${Math.round(e.b)} / Ж${Math.round(e.z)} / У${Math.round(e.u)}</span></div>`).join('')}</div>`;
+    return`<div style="margin-bottom:8px"><div style="font-size:12px;color:var(--text2);margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon(info.iconKey,12)} ${info.label}</div>${me.map(e=>`<div class="sr"><span class="sr-k">${e.name}${e.weight?' ('+e.weight+'г)':''}</span><span class="sr-v" style="font-size:11px;color:var(--text3)">${Math.round(e.k)} / Б${Math.round(e.b)} / Ж${Math.round(e.z)} / У${Math.round(e.u)}</span></div>`).join('')}</div>`;
   }).join('');
   el.innerHTML=`<div class="card">
     <div class="card-title">${fmtLabel(ds)}</div>
@@ -2019,7 +2043,7 @@ function histSelectDay(ds){
     <div class="sr"><span class="sr-k">Белки</span><span class="sr-v" style="color:var(--teal)">${Math.round(tot.b)}г</span></div>
     <div class="sr"><span class="sr-k">Жиры</span><span class="sr-v" style="color:var(--amber)">${Math.round(tot.z)}г</span></div>
     <div class="sr"><span class="sr-k">Углеводы</span><span class="sr-v" style="color:var(--purple)">${Math.round(tot.u)}г</span></div>`:''}
-    ${hydro>0?`<div class="sep"></div><div class="sr"><span class="sr-k">💧 Гидратация</span><span class="sr-v" style="color:var(--cyan)">${hydro} мл</span></div>`:''}
+    ${hydro>0?`<div class="sep"></div><div class="sr"><span class="sr-k" style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/></svg>Гидратация</span><span class="sr-v" style="color:var(--cyan)">${hydro} мл</span></div>`:''}
     <div style="margin-top:10px"><button class="btn btn-p btn-sm" onclick="currentDate='${ds}';showView('food',document.querySelectorAll('.bnav-btn')[1])">Редактировать питание</button></div>
   </div>`;
 }
@@ -2401,9 +2425,9 @@ function setupFoodReminders(){
   foodNotifTimers=[];
   if(Notification.permission!=='granted'||!reminderSettings.foodEnabled) return;
   const meals=[
-    {key:'breakfast',icon:'🥣',label:'Время завтрака!'},
-    {key:'lunch',icon:'🍽️',label:'Время обеда!'},
-    {key:'dinner',icon:'🥘',label:'Время ужина!'},
+    {key:'breakfast',label:'Время завтрака'},
+    {key:'lunch',label:'Время обеда'},
+    {key:'dinner',label:'Время ужина'},
   ];
   const now=new Date();
   meals.forEach(m=>{
@@ -2412,7 +2436,7 @@ function setupFoodReminders(){
     const diff=target-now;
     if(diff>0){
       foodNotifTimers.push(setTimeout(()=>{
-        new Notification(m.icon+' '+m.label,{body:'Не забудь занести приём пищи'});
+        new Notification(m.label,{body:'Не забудь занести приём пищи'});
         haptic('heavy');
       },diff));
     }
@@ -2454,7 +2478,7 @@ function setupWaterHourlyReminders(){
       const hydro=Math.round(waterEntries.filter(e=>e.date===key).reduce((s,e)=>s+e.vol*e.coef,0));
       if(hydro<waterNorm){
         const left=waterNorm-hydro;
-        new Notification('💧 Время выпить воды',{body:`Осталось ${left} мл до нормы`});
+        new Notification('Время выпить воды',{body:`Осталось ${left} мл до нормы`});
         haptic();
       }
     }
@@ -2953,7 +2977,8 @@ function toggleList(prefix){
   if(!list||!btn) return;
   const open=list.style.display!=='none';
   list.style.display=open?'none':'block';
-  btn.innerHTML=open?'История ▾':'История ▴';
+  const chev=btn.querySelector('.tgl-chev');
+  if(chev) chev.style.transform=open?'rotate(0deg)':'rotate(180deg)';
 }
 
 function openBodyModal(){
