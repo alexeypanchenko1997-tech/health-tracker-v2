@@ -471,30 +471,16 @@ select option{background:#1a1c1f;color:#e8e9ea}
 .empty-day-title{font-size:16px;font-weight:600;color:var(--text)}
 .empty-day-sub{font-size:13px;color:var(--text3);line-height:1.5}
 
-/* ── BARCODE SCANNER ── */
-.scan-overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,0.92);z-index:200;
-  flex-direction:column;align-items:center;justify-content:center;gap:16px;
-}
-.scan-overlay.open{display:flex}
-#scan-video{
-  width:min(300px,86vw);height:min(300px,86vw);
-  object-fit:cover;border-radius:18px;
-  border:2px solid var(--blue);display:block;
-}
-.scan-frame{position:relative}
-.scan-line{
-  position:absolute;left:8%;right:8%;height:2px;
-  background:var(--blue);box-shadow:0 0 8px var(--blue);
-  animation:scan-move 2s ease-in-out infinite;
-}
-@keyframes scan-move{0%,100%{top:12%}50%{top:86%}}
-.scan-hint{color:var(--text2);font-size:13px;text-align:center;padding:0 20px;line-height:1.5}
-
 /* ── WEIGHT CHART ── */
 .wt-chart-wrap{position:relative;width:100%;height:120px;margin:8px 0 4px}
 .wt-chart-wrap canvas{display:block}
+
+/* ── COLLAPSIBLE ── */
+.card.collapsible .card-title{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:0}
+.card.collapsible .chev{transition:transform .2s;color:var(--text3);font-size:14px;flex-shrink:0}
+.card.collapsible.open .chev{transform:rotate(180deg)}
+.card.collapsible .collapse-body{display:none;padding-top:10px}
+.card.collapsible.open .collapse-body{display:block}
 </style>
 </head>
 <body>
@@ -748,6 +734,34 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div id="wt-entries-list"></div>
   </div>
 
+  <!-- BODY MEASUREMENTS -->
+  <div class="card">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Параметры тела</span>
+      <button class="btn btn-g" style="padding:4px 12px;font-size:12px" onclick="openBodyModal()">+ Записать</button>
+    </div>
+    <div class="g4" style="margin-bottom:6px">
+      <div class="kpi"><div class="kpi-lbl">Талия</div><div class="kpi-val" id="bd-waist" style="font-size:18px;color:var(--blue)">—</div><div class="kpi-sub">см</div></div>
+      <div class="kpi"><div class="kpi-lbl">Грудь</div><div class="kpi-val" id="bd-chest" style="font-size:18px;color:var(--blue)">—</div><div class="kpi-sub">см</div></div>
+      <div class="kpi"><div class="kpi-lbl">Бицепс</div><div class="kpi-val" id="bd-biceps" style="font-size:18px;color:var(--blue)">—</div><div class="kpi-sub">см</div></div>
+      <div class="kpi"><div class="kpi-lbl">Предпл.</div><div class="kpi-val" id="bd-forearm" style="font-size:18px;color:var(--blue)">—</div><div class="kpi-sub">см</div></div>
+    </div>
+    <div class="g4" style="margin-bottom:8px">
+      <div class="kpi"><div class="kpi-lbl">Δ30 талия</div><div class="kpi-val" id="bd-waist-d" style="font-size:14px">—</div></div>
+      <div class="kpi"><div class="kpi-lbl">Δ30 грудь</div><div class="kpi-val" id="bd-chest-d" style="font-size:14px">—</div></div>
+      <div class="kpi"><div class="kpi-lbl">Δ30 бицепс</div><div class="kpi-val" id="bd-biceps-d" style="font-size:14px">—</div></div>
+      <div class="kpi"><div class="kpi-lbl">Δ30 предпл.</div><div class="kpi-val" id="bd-forearm-d" style="font-size:14px">—</div></div>
+    </div>
+    <div class="tab-row">
+      <button class="tab active" onclick="setBodyMetric('waist',this)">Талия</button>
+      <button class="tab" onclick="setBodyMetric('chest',this)">Грудь</button>
+      <button class="tab" onclick="setBodyMetric('biceps',this)">Бицепс</button>
+      <button class="tab" onclick="setBodyMetric('forearm',this)">Предплечье</button>
+    </div>
+    <div class="wt-chart-wrap" id="bd-chart-wrap"><canvas id="bd-chart"></canvas></div>
+    <div id="bd-entries-list"></div>
+  </div>
+
   <!-- STATS КБЖУ -->
   <div class="card">
     <div class="card-title">Тренды питания</div>
@@ -796,11 +810,16 @@ select option{background:#1a1c1f;color:#e8e9ea}
   </div>
 
   <!-- SAVED FOODS -->
-  <div class="card">
-    <div class="card-title">Мои продукты (<span id="sf-count">0</span>) · Встроенная база: 83</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">В поиске работают оба источника. Звёздочка ★ — твои сохранённые.</div>
-    <div class="empty" id="sf-empty-s">Пока пусто. Добавляй при вводе еды.</div>
-    <div id="sf-list-settings"></div>
+  <div class="card collapsible" id="card-saved-foods">
+    <div class="card-title" onclick="document.getElementById('card-saved-foods').classList.toggle('open')">
+      <span>Мои продукты (<span id="sf-count">0</span>) · Встроенная база: 185</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="collapse-body">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">В поиске работают оба источника. Звёздочка ★ — твои сохранённые.</div>
+      <div class="empty" id="sf-empty-s">Пока пусто. Добавляй при вводе еды.</div>
+      <div id="sf-list-settings"></div>
+    </div>
   </div>
 
   <!-- TOP FOODS -->
@@ -955,10 +974,7 @@ select option{background:#1a1c1f;color:#e8e9ea}
     </div>
     <!-- saved search -->
     <label>Поиск по базе</label>
-    <div style="display:flex;gap:6px;margin-bottom:5px">
-      <input type="text" id="sf-search" placeholder="Начни вводить название..." oninput="renderSFSearch()" autocomplete="off" style="flex:1;min-width:0">
-      <button class="btn" style="padding:7px 13px;font-size:19px;flex-shrink:0;line-height:1" onclick="startBarcodeScanner()" title="Сканировать штрихкод">📷</button>
-    </div>
+    <input type="text" id="sf-search" placeholder="Начни вводить название..." oninput="renderSFSearch()" autocomplete="off" style="margin-bottom:5px">
     <div class="sf-list" id="sf-search-results"></div>
     <div class="sep"></div>
     <div class="fg"><label>Название</label><input type="text" id="add-name" placeholder="Гречка с курицей" oninput="onFoodNameInput()"></div>
@@ -980,25 +996,6 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div class="btn-row">
       <button class="btn btn-p" id="modal-food-btn" onclick="submitFoodEntry(false)">Добавить</button>
       <button class="btn btn-g" id="modal-food-save-btn" onclick="submitFoodEntry(true)">+ Сохранить в базу</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════ BARCODE SCANNER OVERLAY ════ -->
-<div class="scan-overlay" id="scan-overlay">
-  <div class="scan-frame">
-    <video id="scan-video" autoplay playsinline muted></video>
-    <div class="scan-line"></div>
-  </div>
-  <div class="scan-hint" id="scan-hint">Наведи камеру на штрихкод продукта</div>
-  <div style="display:flex;gap:10px">
-    <button class="btn" onclick="stopBarcodeScanner()">Отмена</button>
-    <button class="btn btn-p" onclick="showManualBarcodeInput()">Ввести вручную</button>
-  </div>
-  <div id="scan-manual" style="display:none;width:min(300px,86vw)">
-    <div style="display:flex;gap:8px">
-      <input type="text" id="scan-manual-input" placeholder="Штрихкод EAN-13..." inputmode="numeric" style="flex:1">
-      <button class="btn btn-p" onclick="lookupManualBarcode()">Найти</button>
     </div>
   </div>
 </div>
@@ -1032,6 +1029,25 @@ select option{background:#1a1c1f;color:#e8e9ea}
     </div>
     <div class="fg"><label>Заметка (необяз.)</label><input type="text" id="wt-note" placeholder="Утром натощак..."></div>
     <button class="btn btn-g" style="width:100%" onclick="saveWeightEntry()">Сохранить</button>
+  </div>
+</div>
+
+<!-- ════ MODAL: BODY MEASUREMENTS ════ -->
+<div class="overlay" id="modal-body">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Параметры тела</span><button class="modal-close" onclick="closeModal('modal-body')">✕</button></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Все поля необязательные — заполняй те, что измерял</div>
+    <div class="fg2">
+      <div><label>Талия, см</label><input type="number" id="bd-waist-val" placeholder="80" min="30" max="200" step="0.5"></div>
+      <div><label>Грудь, см</label><input type="number" id="bd-chest-val" placeholder="100" min="40" max="200" step="0.5"></div>
+    </div>
+    <div class="fg2">
+      <div><label>Бицепс, см</label><input type="number" id="bd-biceps-val" placeholder="35" min="15" max="80" step="0.5"></div>
+      <div><label>Предплечье, см</label><input type="number" id="bd-forearm-val" placeholder="28" min="15" max="60" step="0.5"></div>
+    </div>
+    <div class="fg"><label>Дата</label><input type="date" id="bd-date"></div>
+    <div class="fg"><label>Заметка (необяз.)</label><input type="text" id="bd-note" placeholder="Утром натощак..."></div>
+    <button class="btn btn-g" style="width:100%" onclick="saveBodyEntry()">Сохранить</button>
   </div>
 </div>
 
@@ -1087,6 +1103,8 @@ let waterBreakPeriod = '7d';
 let addingMealType = null;
 let notifTimer = null;
 let weightEntries = []; // [{id, date:'YYYY-MM-DD', val, note}]
+let bodyEntries = []; // [{id, date:'YYYY-MM-DD', waist, chest, biceps, forearm, note}]
+let bodyMetric = 'waist';
 
 // ── DATE HELPERS ─────────────────────────────────────
 function isoToday(){ const n=new Date(); return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0'); }
@@ -1318,6 +1336,7 @@ function loadAll(){
   try{ savedFoods=JSON.parse(localStorage.getItem('kbzhu_foods_v1'))||[]; }catch(e){}
   try{ dayNotes=JSON.parse(localStorage.getItem('kbzhu_notes_v1'))||{}; }catch(e){}
   try{ weightEntries=JSON.parse(localStorage.getItem('weight_v1'))||[]; }catch(e){}
+  try{ bodyEntries=JSON.parse(localStorage.getItem('body_v1'))||[]; }catch(e){}
   // Water — original keys
   try{ waterEntries=JSON.parse(localStorage.getItem('hydro_entries'))||[]; }catch(e){ waterEntries=[]; }
   try{ waterNorm=+localStorage.getItem('hydro_norm')||2000; }catch(e){}
@@ -1977,6 +1996,7 @@ function histSelectDay(ds){
 // ══════════════════════════════════════════════════════
 function renderMore(){
   renderWeightSection();
+  renderBodySection();
   renderFoodStats();
   renderWaterStats();
   renderWeeklySummary();
@@ -2104,7 +2124,8 @@ function exportAll(){
     version:2,
     exportedAt:new Date().toISOString(),
     foodEntries,goals,savedFoods,dayNotes,
-    waterEntries,waterNorm
+    waterEntries,waterNorm,
+    weightEntries,bodyEntries
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -2131,6 +2152,20 @@ function handleImport(event){
         waterEntries=[...waterEntries,...we.filter(e=>!existing.has(e.id))];
       }
       if(d.waterNorm||d.norm) waterNorm=d.waterNorm||d.norm;
+      // Weight (вес и % жира)
+      if(Array.isArray(d.weightEntries)){
+        const existingW=new Set(weightEntries.map(e=>e.id));
+        weightEntries=[...weightEntries,...d.weightEntries.filter(e=>!existingW.has(e.id))];
+        weightEntries.sort((a,b)=>a.date.localeCompare(b.date));
+        saveWeightSt();
+      }
+      // Body measurements
+      if(Array.isArray(d.bodyEntries)){
+        const existingB=new Set(bodyEntries.map(e=>e.id));
+        bodyEntries=[...bodyEntries,...d.bodyEntries.filter(e=>!existingB.has(e.id))];
+        bodyEntries.sort((a,b)=>a.date.localeCompare(b.date));
+        saveBodySt();
+      }
       saveFoodEntries();saveGoalsSt();saveFoods();saveNotes();saveWaterEntries();saveWaterNormSt();
       renderToday();showToast('Импортировано ✓');
     }catch(e){ showToast('Ошибка формата файла'); }
@@ -2727,94 +2762,162 @@ function renderWeightChart(sorted){
 }
 
 // ══════════════════════════════════════════════════════
-// BARCODE SCANNER
+// BODY MEASUREMENTS
 // ══════════════════════════════════════════════════════
-let _scanStream=null, _scanAF=null, _barcodeDetector=null;
+const BODY_FIELDS=['waist','chest','biceps','forearm'];
+const BODY_LABELS={waist:'Талия',chest:'Грудь',biceps:'Бицепс',forearm:'Предплечье'};
 
-async function startBarcodeScanner(){
-  const overlay=document.getElementById('scan-overlay');
-  const video=document.getElementById('scan-video');
-  const hint=document.getElementById('scan-hint');
-  document.getElementById('scan-manual').style.display='none';
-  document.getElementById('scan-manual-input').value='';
+function saveBodySt(){ localStorage.setItem('body_v1',JSON.stringify(bodyEntries)); }
 
-  if('BarcodeDetector' in window){
-    try{
-      _barcodeDetector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128']});
-      _scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-      video.srcObject=_scanStream;
-      video.style.display='block';
-      document.querySelector('.scan-line').style.display='block';
-      hint.textContent='Наведи камеру на штрихкод продукта';
-      overlay.classList.add('open');
-      video.onloadedmetadata=()=>{ video.play(); _scanLoop(video); };
-      return;
-    }catch(e){}
+function openBodyModal(){
+  BODY_FIELDS.forEach(f=>document.getElementById('bd-'+f+'-val').value='');
+  document.getElementById('bd-date').value=isoToday();
+  document.getElementById('bd-note').value='';
+  document.getElementById('modal-body').classList.add('open');
+}
+
+function saveBodyEntry(){
+  const vals={};
+  BODY_FIELDS.forEach(f=>{
+    const v=parseFloat(document.getElementById('bd-'+f+'-val').value);
+    vals[f]=isNaN(v)?null:v;
+  });
+  if(BODY_FIELDS.every(f=>vals[f]==null)){showToast('Введи хотя бы одно значение');return;}
+  const date=document.getElementById('bd-date').value||isoToday();
+  const note=document.getElementById('bd-note').value.trim();
+  // Слияние с существующей записью на ту же дату — чтобы можно было дозаписывать
+  const existing=bodyEntries.find(e=>e.date===date);
+  if(existing){
+    BODY_FIELDS.forEach(f=>{ if(vals[f]!=null) existing[f]=vals[f]; });
+    if(note) existing.note=note;
+  } else {
+    bodyEntries.push({id:Date.now().toString(36),date,...vals,note});
   }
-  // Fallback — manual input
-  video.style.display='none';
-  document.querySelector('.scan-line').style.display='none';
-  hint.textContent='Сканирование недоступно — введи штрихкод вручную';
-  overlay.classList.add('open');
-  showManualBarcodeInput();
+  bodyEntries.sort((a,b)=>a.date.localeCompare(b.date));
+  saveBodySt();
+  closeModal('modal-body');
+  renderBodySection();
+  showToast('Записано');
 }
 
-function _scanLoop(video){
-  if(!_barcodeDetector||!_scanStream) return;
-  _barcodeDetector.detect(video).then(codes=>{
-    if(codes.length){
-      stopBarcodeScanner();
-      _fetchOFF(codes[0].rawValue);
-    } else { _scanAF=requestAnimationFrame(()=>_scanLoop(video)); }
-  }).catch(()=>{ _scanAF=requestAnimationFrame(()=>_scanLoop(video)); });
+function deleteBodyEntry(id){
+  bodyEntries=bodyEntries.filter(e=>e.id!==id);
+  saveBodySt();
+  renderBodySection();
 }
 
-function stopBarcodeScanner(){
-  if(_scanStream){ _scanStream.getTracks().forEach(t=>t.stop()); _scanStream=null; }
-  if(_scanAF){ cancelAnimationFrame(_scanAF); _scanAF=null; }
-  _barcodeDetector=null;
-  document.getElementById('scan-overlay').classList.remove('open');
+function setBodyMetric(m,btn){
+  bodyMetric=m;
+  document.querySelectorAll('#view-more .tab').forEach(()=>{}); // no-op
+  if(btn){ btn.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); }
+  renderBodyChart();
 }
 
-function showManualBarcodeInput(){
-  document.getElementById('scan-manual').style.display='block';
-  setTimeout(()=>document.getElementById('scan-manual-input').focus(),100);
+function renderBodySection(){
+  const sorted=[...bodyEntries].sort((a,b)=>a.date.localeCompare(b.date));
+  const cutoff=isoDate(new Date(Date.now()-30*86400000));
+
+  BODY_FIELDS.forEach(f=>{
+    const last=[...sorted].reverse().find(e=>e[f]!=null);
+    const el=document.getElementById('bd-'+f);
+    if(el) el.textContent=last?last[f]:'—';
+    const dEl=document.getElementById('bd-'+f+'-d');
+    const base=sorted.find(e=>e.date>=cutoff&&e[f]!=null);
+    if(dEl){
+      if(last&&base&&last!==base){
+        const d=+(last[f]-base[f]).toFixed(1);
+        dEl.textContent=(d>0?'+':'')+d+' см';
+        // Талия: меньше = лучше; грудь/бицепс/предплечье: больше = лучше
+        const goodIfDown=(f==='waist');
+        const isGood=goodIfDown? d<0 : d>0;
+        dEl.style.color=d===0?'var(--text)':(isGood?'var(--green)':'var(--amber)');
+      } else { dEl.textContent='—'; dEl.style.color='var(--text)'; }
+    }
+  });
+
+  renderBodyChart();
+
+  const listEl=document.getElementById('bd-entries-list');
+  if(!listEl) return;
+  const recent=[...sorted].reverse().slice(0,7);
+  if(!recent.length){ listEl.innerHTML='<div class="empty">Нет записей. Нажми «+ Записать»</div>'; return; }
+  listEl.innerHTML=recent.map(e=>{
+    const parts=BODY_FIELDS.filter(f=>e[f]!=null).map(f=>`<span style="color:var(--blue)">${BODY_LABELS[f].slice(0,3).toLowerCase()} ${e[f]}</span>`).join(' · ');
+    return `
+      <div class="sr">
+        <span class="sr-k" style="font-size:12px">${fmtLabel(e.date)}${e.note?` · <em style="color:var(--text3)">${e.note}</em>`:''}</span>
+        <span class="sr-v" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          ${parts}
+          <button class="btn-del" onclick="deleteBodyEntry('${e.id}')">✕</button>
+        </span>
+      </div>`;
+  }).join('');
 }
 
-function lookupManualBarcode(){
-  const v=document.getElementById('scan-manual-input').value.trim();
-  if(!v){showToast('Введи штрихкод');return;}
-  stopBarcodeScanner();
-  _fetchOFF(v);
-}
+function renderBodyChart(){
+  const wrap=document.getElementById('bd-chart-wrap');
+  const canvas=document.getElementById('bd-chart');
+  if(!canvas||!wrap) return;
+  const points=bodyEntries.filter(e=>e[bodyMetric]!=null).sort((a,b)=>a.date.localeCompare(b.date));
+  const dpr=window.devicePixelRatio||1;
+  const W=wrap.offsetWidth||300;
+  const H=120;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
 
-async function _fetchOFF(barcode){
-  showToast('Ищу продукт...');
-  try{
-    const r=await fetch('https://world.openfoodfacts.org/api/v0/product/'+barcode+'.json');
-    const d=await r.json();
-    if(d.status!==1||!d.product){showToast('Продукт не найден в базе');return;}
-    const p=d.product; const n=p.nutriments||{};
-    const name=(p.product_name_ru||p.product_name_en||p.product_name||'').trim()||('Продукт '+barcode);
-    const k=Math.round(n['energy-kcal_100g']||(n['energy_100g']||0)/4.184);
-    const b=Math.round((n.proteins_100g||0)*10)/10;
-    const z=Math.round((n.fat_100g||0)*10)/10;
-    const u=Math.round((n.carbohydrates_100g||0)*10)/10;
-    openFoodModal(addingMealType||null);
-    setTimeout(()=>{
-      document.getElementById('add-name').value=name;
-      document.getElementById('add-k100').value=k;
-      document.getElementById('add-b100').value=b;
-      document.getElementById('add-z100').value=z;
-      document.getElementById('add-u100b').value=u;
-      document.getElementById('add-k').value=k;
-      document.getElementById('add-b').value=b;
-      document.getElementById('add-z').value=z;
-      document.getElementById('add-u').value=u;
-      document.getElementById('modal-food-save-btn').style.display='';
-      showToast('Найдено: '+name);
-    },120);
-  }catch(e){ showToast('Ошибка сети. Попробуй позже'); }
+  if(points.length<2){
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.font='12px -apple-system,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(points.length===0?'Нет данных':'Нужно минимум 2 записи для графика',W/2,H/2);
+    return;
+  }
+
+  const vals=points.map(e=>e[bodyMetric]);
+  const minV=Math.min(...vals)-0.5;
+  const maxV=Math.max(...vals)+0.5;
+  const range=maxV-minV||1;
+  const padX=24, padY=14;
+
+  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+  for(let i=0;i<=3;i++){
+    const y=padY+(H-padY*2)/3*i;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  const pt=i=>({
+    x: points.length===1? W/2 : padX+(W-padX*2)/(points.length-1)*i,
+    y: padY+(H-padY*2)*(1-(points[i][bodyMetric]-minV)/range)
+  });
+
+  ctx.beginPath();
+  for(let i=0;i<points.length;i++){ const p=pt(i); i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y); }
+  const last=pt(points.length-1); const first=pt(0);
+  ctx.lineTo(last.x,H); ctx.lineTo(first.x,H); ctx.closePath();
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(74,158,255,0.25)'); grad.addColorStop(1,'rgba(74,158,255,0)');
+  ctx.fillStyle=grad; ctx.fill();
+
+  ctx.beginPath(); ctx.strokeStyle='rgba(74,158,255,0.95)'; ctx.lineWidth=2;
+  for(let i=0;i<points.length;i++){ const p=pt(i); i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y); }
+  ctx.stroke();
+
+  const showAll=points.length<=10;
+  for(let i=0;i<points.length;i++){
+    const p=pt(i);
+    ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fillStyle='#4a9eff'; ctx.fill();
+    if(showAll||i===0||i===points.length-1){
+      ctx.fillStyle='rgba(255,255,255,0.65)';
+      ctx.font='9px -apple-system,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText(points[i][bodyMetric],p.x,p.y-7);
+    }
+  }
 }
 
 // Service Worker registration
