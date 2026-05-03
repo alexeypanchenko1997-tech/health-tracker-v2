@@ -731,7 +731,8 @@ select option{background:#1a1c1f;color:#e8e9ea}
       <input type="number" id="wt-height" placeholder="175" min="100" max="250" step="1" oninput="saveHeightPref()" style="width:120px">
     </div>
     <div class="wt-chart-wrap" id="wt-chart-wrap"><canvas id="wt-chart"></canvas></div>
-    <div id="wt-entries-list"></div>
+    <button class="btn btn-sm" id="wt-toggle-list" onclick="toggleList('wt')" style="margin-top:8px;width:100%">История ▾</button>
+    <div id="wt-entries-list" style="display:none;margin-top:8px"></div>
   </div>
 
   <!-- BODY MEASUREMENTS -->
@@ -759,7 +760,8 @@ select option{background:#1a1c1f;color:#e8e9ea}
       <button class="tab" onclick="setBodyMetric('forearm',this)">Предплечье</button>
     </div>
     <div class="wt-chart-wrap" id="bd-chart-wrap"><canvas id="bd-chart"></canvas></div>
-    <div id="bd-entries-list"></div>
+    <button class="btn btn-sm" id="bd-toggle-list" onclick="toggleList('bd')" style="margin-top:8px;width:100%">История ▾</button>
+    <div id="bd-entries-list" style="display:none;margin-top:8px"></div>
   </div>
 
   <!-- STATS КБЖУ -->
@@ -2768,6 +2770,15 @@ const BODY_FIELDS=['waist','chest','biceps','forearm'];
 const BODY_LABELS={waist:'Талия',chest:'Грудь',biceps:'Бицепс',forearm:'Предплечье'};
 
 function saveBodySt(){ localStorage.setItem('body_v1',JSON.stringify(bodyEntries)); }
+
+function toggleList(prefix){
+  const list=document.getElementById(prefix+'-entries-list');
+  const btn=document.getElementById(prefix+'-toggle-list');
+  if(!list||!btn) return;
+  const open=list.style.display!=='none';
+  list.style.display=open?'none':'block';
+  btn.innerHTML=open?'История ▾':'История ▴';
+}
 
 function openBodyModal(){
   BODY_FIELDS.forEach(f=>document.getElementById('bd-'+f+'-val').value='');
