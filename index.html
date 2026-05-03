@@ -475,6 +475,20 @@ select option{background:#1a1c1f;color:#e8e9ea}
 .wt-chart-wrap{position:relative;width:100%;height:120px;margin:8px 0 4px}
 .wt-chart-wrap canvas{display:block}
 
+/* ── TARGETS BLOCK ── */
+.tgt-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:8px 10px;border-radius:10px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  font-size:12px;line-height:1.4
+}
+.tgt-row + .tgt-row{margin-top:6px}
+.tgt-l{color:var(--text2);flex-shrink:0}
+.tgt-r{text-align:right;color:var(--text)}
+.tgt-eta{color:var(--text3);font-size:11px;display:block}
+.tgt-empty{color:var(--text3);font-size:12px;text-align:center;padding:8px;cursor:pointer}
+.tgt-empty:hover{color:var(--text2)}
+
 /* ── COLLAPSIBLE ── */
 .card.collapsible .card-title{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:0}
 .card.collapsible .chev{transition:transform .2s;color:var(--text3);font-size:14px;flex-shrink:0}
@@ -713,9 +727,12 @@ select option{background:#1a1c1f;color:#e8e9ea}
 
   <!-- WEIGHT -->
   <div class="card">
-    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;gap:6px">
       <span>Вес тела</span>
-      <button class="btn btn-g" style="padding:4px 12px;font-size:12px" onclick="openWeightModal()">+ Записать</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn" style="padding:4px 10px;font-size:12px" onclick="openTargetsModal()" title="Цели">🎯</button>
+        <button class="btn btn-g" style="padding:4px 12px;font-size:12px" onclick="openWeightModal()">+ Записать</button>
+      </div>
     </div>
     <div class="g4" style="margin-bottom:6px">
       <div class="kpi cz" style="grid-column:span 2"><div class="kpi-lbl">Текущий вес</div><div class="kpi-val" id="wt-current" style="color:var(--green)">—</div><div class="kpi-sub">кг</div></div>
@@ -730,6 +747,7 @@ select option{background:#1a1c1f;color:#e8e9ea}
       <label>Рост, см (для BMI)</label>
       <input type="number" id="wt-height" placeholder="175" min="100" max="250" step="1" oninput="saveHeightPref()" style="width:120px">
     </div>
+    <div id="wt-targets-info" style="margin-bottom:8px"></div>
     <div class="wt-chart-wrap" id="wt-chart-wrap"><canvas id="wt-chart"></canvas></div>
     <button class="btn btn-sm" id="wt-toggle-list" onclick="toggleList('wt')" style="margin-top:8px;width:100%">История ▾</button>
     <div id="wt-entries-list" style="display:none;margin-top:8px"></div>
@@ -1050,6 +1068,19 @@ select option{background:#1a1c1f;color:#e8e9ea}
     <div class="fg"><label>Дата</label><input type="date" id="bd-date"></div>
     <div class="fg"><label>Заметка (необяз.)</label><input type="text" id="bd-note" placeholder="Утром натощак..."></div>
     <button class="btn btn-g" style="width:100%" onclick="saveBodyEntry()">Сохранить</button>
+  </div>
+</div>
+
+<!-- ════ MODAL: TARGETS ════ -->
+<div class="overlay" id="modal-targets">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Цели</span><button class="modal-close" onclick="closeModal('modal-targets')">✕</button></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Прогноз достижения считается по тренду за последние 30 дней. Оставь поле пустым, чтобы убрать цель.</div>
+    <div class="fg2">
+      <div><label>Целевой вес, кг</label><input type="number" id="tgt-weight" placeholder="70" min="30" max="300" step="0.1"></div>
+      <div><label>Цель % жира</label><input type="number" id="tgt-fat" placeholder="12" min="3" max="50" step="0.1"></div>
+    </div>
+    <button class="btn btn-g" style="width:100%" onclick="saveTargets()">Сохранить</button>
   </div>
 </div>
 
@@ -2128,7 +2159,8 @@ function exportAll(){
     foodEntries,goals,savedFoods,dayNotes,
     waterEntries,waterNorm,
     weightEntries,bodyEntries,
-    wtHeight: localStorage.getItem('wt_height')||null
+    wtHeight: localStorage.getItem('wt_height')||null,
+    wtTargets: getTargets()
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -2172,6 +2204,11 @@ function handleImport(event){
       // Рост (для BMI) — переносим только если у нас его ещё нет
       if(d.wtHeight && !localStorage.getItem('wt_height')){
         localStorage.setItem('wt_height', d.wtHeight);
+      }
+      // Цели по весу/жиру — переносим только если своих ещё нет
+      if(d.wtTargets && !localStorage.getItem('wt_targets')){
+        const t=d.wtTargets;
+        if(t && (t.w||t.f)) saveTargetsSt(t);
       }
       saveFoodEntries();saveGoalsSt();saveFoods();saveNotes();saveWaterEntries();saveWaterNormSt();
       renderToday();showToast('Импортировано ✓');
@@ -2605,6 +2642,108 @@ initSwipeClose();
 // WEIGHT TRACKING
 // ══════════════════════════════════════════════════════
 function saveWeightSt(){ localStorage.setItem('weight_v1',JSON.stringify(weightEntries)); }
+
+// ── TARGETS (целевой вес и % жира) ───────────────────
+function getTargets(){
+  try{ return JSON.parse(localStorage.getItem('wt_targets'))||{}; }catch(e){ return {}; }
+}
+function saveTargetsSt(t){
+  if(!t.w && !t.f) localStorage.removeItem('wt_targets');
+  else localStorage.setItem('wt_targets',JSON.stringify(t));
+}
+function openTargetsModal(){
+  const t=getTargets();
+  document.getElementById('tgt-weight').value=t.w||'';
+  document.getElementById('tgt-fat').value=t.f||'';
+  document.getElementById('modal-targets').classList.add('open');
+}
+function saveTargets(){
+  const w=parseFloat(document.getElementById('tgt-weight').value);
+  const f=parseFloat(document.getElementById('tgt-fat').value);
+  const t={};
+  if(!isNaN(w) && w>=30 && w<=300) t.w=w;
+  if(!isNaN(f) && f>=3 && f<=50) t.f=f;
+  saveTargetsSt(t);
+  closeModal('modal-targets');
+  renderWeightSection();
+  showToast('Цели сохранены');
+}
+
+// Линейная регрессия по последним 30 дням → прогноз даты достижения цели
+// entries: [{date, val}], target: число. Возвращает {delta, eta, ok, msg}
+function calcETA(entries, target){
+  if(target==null || !entries.length) return null;
+  const last=entries[entries.length-1];
+  const delta=+(target-last.val).toFixed(1);
+  if(Math.abs(delta)<0.05) return {delta:0,eta:null,ok:true,msg:'Цель достигнута 🎯'};
+
+  // Берём только последние 30 дней
+  const cutoff=new Date(Date.now()-30*86400000);
+  const recent=entries.filter(e=>parseIso(e.date)>=cutoff);
+  if(recent.length<3) return {delta,eta:null,ok:false,msg:'нужно ≥3 записи за 30 дней'};
+
+  // Регрессия: x — дни от первой точки, y — значение
+  const x0=parseIso(recent[0].date).getTime();
+  const xs=recent.map(e=>(parseIso(e.date).getTime()-x0)/86400000);
+  const ys=recent.map(e=>e.val);
+  const n=xs.length;
+  const mx=xs.reduce((a,b)=>a+b,0)/n;
+  const my=ys.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;
+  for(let i=0;i<n;i++){ num+=(xs[i]-mx)*(ys[i]-my); den+=(xs[i]-mx)**2; }
+  const slope=den===0?0:num/den; // ед./день
+
+  // Проверка совпадения направления тренда с нужным
+  if(slope===0) return {delta,eta:null,ok:false,msg:'тренд плоский'};
+  if((delta<0 && slope>=0) || (delta>0 && slope<=0)){
+    return {delta,eta:null,ok:false,msg:'тренд идёт в обратную сторону'};
+  }
+
+  // От последней точки до цели по текущему тренду
+  const daysLeft=(target-last.val)/slope;
+  if(daysLeft<0 || !isFinite(daysLeft)) return {delta,eta:null,ok:false,msg:'не сходится'};
+  if(daysLeft>3650) return {delta,eta:null,ok:false,msg:'слишком медленно (>10 лет)'};
+  const eta=new Date(parseIso(last.date).getTime()+daysLeft*86400000);
+  return {delta,eta,ok:true,daysLeft:Math.round(daysLeft)};
+}
+
+function fmtETA(eta){
+  if(!eta) return '';
+  return eta.toLocaleDateString('ru-RU',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function renderTargetsInfo(sortedW){
+  const el=document.getElementById('wt-targets-info');
+  if(!el) return;
+  const t=getTargets();
+  if(!t.w && !t.f){
+    el.innerHTML=`<div class="tgt-empty" onclick="openTargetsModal()">+ Установить цели по весу или % жира</div>`;
+    return;
+  }
+  let html='';
+  if(t.w){
+    const r=calcETA(sortedW.map(e=>({date:e.date,val:e.val})), t.w);
+    html+=tgtRowHtml('Цель веса', t.w+' кг', r, 'кг');
+  }
+  if(t.f){
+    const fatPoints=sortedW.filter(e=>e.fat!=null).map(e=>({date:e.date,val:e.fat}));
+    const r=calcETA(fatPoints, t.f);
+    html+=tgtRowHtml('Цель % жира', t.f+'%', r, '%');
+  }
+  el.innerHTML=html;
+}
+function tgtRowHtml(label, targetTxt, r, unit){
+  if(!r) return `<div class="tgt-row"><span class="tgt-l">${label}</span><span class="tgt-r">${targetTxt}<span class="tgt-eta">нет данных</span></span></div>`;
+  let right=`${targetTxt}`;
+  if(r.delta===0){
+    right+=`<span class="tgt-eta" style="color:var(--green)">${r.msg}</span>`;
+  } else {
+    const sign=r.delta>0?'+':'';
+    const dColor=Math.sign(r.delta)===-1?'var(--green)':'var(--amber)'; // отрицательная дельта = надо снизить
+    right+=`<span class="tgt-eta">осталось <span style="color:${dColor}">${sign}${r.delta} ${unit}</span> · ${r.ok?'к '+fmtETA(r.eta)+' ('+r.daysLeft+' дн)':r.msg}</span>`;
+  }
+  return `<div class="tgt-row"><span class="tgt-l">${label}</span><span class="tgt-r">${right}</span></div>`;
+}
 function saveHeightPref(){
   const v=document.getElementById('wt-height').value;
   if(v) localStorage.setItem('wt_height',v);
@@ -2691,6 +2830,7 @@ function renderWeightSection(){
     bmiEl.style.color=bmi<18.5||bmi>=30?'var(--red)':bmi<25?'var(--green)':'var(--amber)';
   } else if(bmiEl){ bmiEl.textContent='—'; }
 
+  renderTargetsInfo(sorted);
   renderWeightChart(sorted);
 
   // Recent entries (last 7)
@@ -2719,11 +2859,21 @@ function renderWeightChart(sorted){
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   canvas.width=W*dpr; canvas.height=H*dpr;
   const ctx=canvas.getContext('2d');
+  ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  const targets=getTargets();
+  const targetW=targets.w||null;
 
   const vals=sorted.map(e=>e.val);
-  const minV=Math.min(...vals)-0.5;
-  const maxV=Math.max(...vals)+0.5;
+  let minV=Math.min(...vals)-0.5;
+  let maxV=Math.max(...vals)+0.5;
+  // Расширяем диапазон, чтобы линия цели влезла на график
+  if(targetW!=null){
+    minV=Math.min(minV,targetW-0.3);
+    maxV=Math.max(maxV,targetW+0.3);
+  }
   const range=maxV-minV||1;
   const padX=24, padY=14;
 
@@ -2732,6 +2882,20 @@ function renderWeightChart(sorted){
   for(let i=0;i<=3;i++){
     const y=padY+(H-padY*2)/3*i;
     ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  // Линия цели — пунктир
+  if(targetW!=null){
+    const ty=padY+(H-padY*2)*(1-(targetW-minV)/range);
+    ctx.save();
+    ctx.strokeStyle='rgba(255,193,7,0.55)'; ctx.lineWidth=1.2;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(0,ty); ctx.lineTo(W,ty); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle='rgba(255,193,7,0.85)';
+    ctx.font='9px -apple-system,sans-serif';
+    ctx.textAlign='right';
+    ctx.fillText('🎯 '+targetW,W-4,ty-3);
   }
 
   const pt=i=>({
@@ -2936,9 +3100,32 @@ function renderBodyChart(){
   }
 }
 
-// Service Worker registration
+// Service Worker registration + авто-обновление при выходе новой версии
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    // Проверяем обновления при возвращении на вкладку
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update();
+    });
+    // Когда найден новый SW — при его установке просим активироваться сразу
+    reg.addEventListener('updatefound', () => {
+      const sw = reg.installing;
+      if (!sw) return;
+      sw.addEventListener('statechange', () => {
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          // Новая версия готова — активируем без ожидания
+          sw.postMessage({type:'SKIP_WAITING'});
+        }
+      });
+    });
+    // После активации нового SW — перезагружаем страницу один раз
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+  }).catch(() => {});
 }
 
 // Apple touch icon: black bg + white H
