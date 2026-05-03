@@ -1,5 +1,5 @@
 // Версия — поднимается при каждом деплое для инвалидации кэша
-const CACHE_VERSION = '2026-05-03-1';
+const CACHE_VERSION = '2026-05-03-2';
 const CACHE = `health-${CACHE_VERSION}`;
 
 self.addEventListener('install', e => {
